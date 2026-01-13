@@ -1,13 +1,15 @@
 from rest_framework import serializers
 from movies.models import Movie
-from genres.models import Genre
-from actors.models import Actor
 
 
-class MovieSerializer(serializers.ModelSerializer):
+class MovieModelSerializer(serializers.ModelSerializer):
+    rate = serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Movie
         fields = '__all__'
+
+    def get_rate(self, obj):
+        return 5
 
     def validate_release_date(self, value):
         if value.year < 1990:
