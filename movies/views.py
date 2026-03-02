@@ -1,8 +1,10 @@
+from django.db.models import Count, Avg
 from rest_framework import generics, views, response, status
 from rest_framework.permissions import IsAuthenticated
 from movies.models import Movie
 from movies.serializers import MovieModelSerializer
 from app.permissions import GlobalDefaultPermission
+from reviews.models import Review
 
 
 class MovieCreateListView(generics.ListCreateAPIView):
@@ -22,7 +24,14 @@ class MovieStatsView(views.APIView):
     queryset = Movie.objects.all()
 
     def get(self, request):
-        # buscar todos os dados
-        # montar respostas
-        #devolver reposta pro user com estatísticas
-        return response.Response(data={'message': 'Funcionou'}, status=status.HTTP_200_OK)
+        total_movies = self.queryset.count()
+        movies_by_genre = self.queryset.values('genre__name').annotate(count=Count('id')).order_by('-count')
+        total_reviews = Review.objects.count()
+        average_stars = Review.objects.aggregate(average_stars=Avg('stars'))['average_stars']
+
+        return response.Response(data={
+            'total_movies': total_movies,
+            'movies_by_genre': movies_by_genre,
+            'total_reviews': total_reviews,
+            'average_stars': round(average_stars, 1) if average_stars is not None else 0,
+        }, status=status.HTTP_200_OK)
