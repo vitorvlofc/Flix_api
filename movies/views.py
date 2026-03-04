@@ -37,5 +37,5 @@ class MovieStatsView(views.APIView):
         }
         serializer = MovieStatsSerializer(data=data)
         serializer.is_valid(raise_exception=True)
-        
+
         return response.Response(serializer.validated_data, status=status.HTTP_200_OK)

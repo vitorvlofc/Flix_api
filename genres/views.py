@@ -4,6 +4,7 @@ from genres.models import Genre
 from genres.serializers import GenreSerializer
 from app.permissions import GlobalDefaultPermission
 
+
 class GenreCreateListView(generics.ListCreateAPIView):
     permission_classes = (IsAuthenticated, GlobalDefaultPermission,)
     queryset = Genre.objects.all()

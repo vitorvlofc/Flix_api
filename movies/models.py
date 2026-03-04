@@ -1,6 +1,6 @@
 from django.db import models
 from actors.models import Actor
-from genres.models import Genre 
+from genres.models import Genre
 
 
 class Movie(models.Model):
@@ -12,5 +12,3 @@ class Movie(models.Model):
 
     def __str__(self):
         return self.title
-
-
