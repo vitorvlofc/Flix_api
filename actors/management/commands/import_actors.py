@@ -1,4 +1,7 @@
+import csv
+from datetime import datetime
 from django.core.management.base import BaseCommand
+from actors.models import Actor
 
 
 class Command(BaseCommand):
@@ -7,10 +10,28 @@ class Command(BaseCommand):
         parser.add_argument(
             'file_name',
             type=str,
-            help='The name of the file to import actors from'
+            help='Nome do arquivo CSV com atores',
         )
 
     def handle(self, *args, **options):
         file_name = options['file_name']
 
-        print(f'Printing all actors... file name: {file_name}')
+        with open(file_name, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file)
+            for row in reader:
+                # 🔧 ajuste mínimo aqui
+                row = {key.strip(): value for key, value in row.items()}
+
+                name = row['name']
+                birthday = datetime.strptime(row['birthday'], '%Y-%m-%d').date()
+                nationality = row['nationality']
+
+                self.stdout.write(self.style.NOTICE(name))
+
+                Actor.objects.create(
+                    name=name,
+                    birthday=birthday,
+                    nationality=nationality
+                )
+
+        self.stdout.write(self.style.SUCCESS('Atores importados com sucesso!'))
